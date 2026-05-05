@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LearnNova Quiz Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      font-family: 'Poppins', 'Noto Sans Bengali', sans-serif;
+    }
+
+    .banner {
+      width: 100%;
+      height: 250px;
+      background-image: url('/assets/image/banner.webp');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .container {
+      display: flex;
+      padding: 40px 5%;
+      gap: 30px;
+    }
+
+    .left, .right {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .left {
+      flex: 7;
+    }
+
+    .right {
+      flex: 3;
+    }
+
+    .left h1 {
+      font-size: 26px;
+      color: #0066cc;
+      text-align: center;
+    }
+
+    .left h2 {
+      font-size: 50px;
+      color: #000000;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .left h3 {
+      font-size: 30px;
+      color: #000000;
+      text-align: center;
+      
+    }
+
+    .right h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .submit-btn, .next-btn {
+      background-color: #0066cc;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+
+    }
+
+     .submit-btn, .next-btn1 {
+      background-color: #0066cc;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      margin-left: 10px;
+
+    }
+
+
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #004a99;
+    }
+
+    .submit-btn:hover, .next-btn1:hover {
+      background-color: #004a99;
+    }    
+
+    #error-message {
+      color: red;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    #quizArea {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: 40px auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .question {
+      font-size: 18px;
+      margin: 20px 0 10px;
+      font-weight: bold;
+    }
+
+    .options label {
+      display: block;
+      margin: 5px 0;
+      font-size: 16px;
+    }
+
+    .quiz-section {
+        display: none;
+    }
+    .quiz-section.active {
+        display: block;
+    }
+
+    #timer {
+      font-size: 18px;
+      color: red;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    #progressBarContainer {
+      width: 100%;
+      background: #ddd;
+      height: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    #progressBar {
+      height: 100%;
+      background: #4CAF50;
+      width: 100%;
+      transition: width 1s linear;
+    }
+
+    #thankYou {
+      display: none;
+      text-align: center;
+      margin-top: 50px;
+      font-size: 20px;
+      color: green;
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin: 50px auto;
+    }
+
+    #thankYou h2 {
+        color: #0066cc;
+        margin-bottom: 20px;
+    }
+
+    #thankYou p {
+        font-size: 22px;
+        color: #333;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    #thankYou .score-display {
+        font-size: 28px;
+        font-weight: bold;
+        color: #28a745; /* Green color for score */
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+  </style>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+  <div class="container" id="loginSection">
+    <div class="left">
+      <h3>Welcome to <u>LearnNova</u></h3> 
+      <h1>Examination Portal</h1>
+      <p style="margin-top: 5px; font-size: 15px; text-align: justify;">We are excited to have you here! Please log in to begin your examination. Remember, you can take this examination only once, and it must be submitted within the allotted time. Failure to do so will result in cancellation.</p>
+      <p style="margin-top: 5px; font-size: 15px; text-align: justify;">আমরা আপনাকে এখানে পেয়ে খুবই আনন্দিত! আপনার পরীক্ষা শুরু করতে অনুগ্রহ করে লগ ইন করুন। মনে রাখবেন, আপনি এই পরীক্ষা মাত্র একবারই দিতে পারবেন এবং নির্ধারিত সময়ের মধ্যেই জমা দিতে হবে। নির্দিষ্ট সময়ের মধ্যে জমা না দিলে, আপনার পরীক্ষা বাতিল হয়ে যাবে।</p>
+
+      <h2 id="subject">Science</h2>
+      <h1 id="exam_code">test1_without_captcha</h1>
+      </div>
+
+    <div class="right">
+      <h2>Student Login</h2>
+      <form onsubmit="return checkLogin(event)">
+        <div id="error-message"></div>
+        <div class="form-group">
+          <label for="studentName">Student Name</label>
+          <input type="text" id="studentName" name="studentName" required>
+        </div>
+        <div class="form-group">
+          <label for="studentEmail">Email</label>
+          <input type="email" id="studentEmail" name="studentEmail" required>
+        </div>
+        <div class="g-recaptcha" id="captchaDiv" style="display: none;" data-sitekey="6LcAn28rAAAAAAGEZfbCyabyn3-ygSAKfcqEboWq"></div>        
+        
+        <button type="submit" class="submit-btn" id="goQuiz" style="margin-top: 20px; margin-left: 28px; width: 280px; text-align: center; display: none;">Confirm</button>
+      </form>
+      <button class="submit-btn" id="checkEmailBtn" style="margin-top: 20px; margin-left: 28px; width: 280px; text-align: center;">Verify</button>
+      <p id="message" style="display: none; color: green; margin-top: 10px;"></p>
+    </div>
+  </div>
+
+  <div id="quizArea">
+    <h1 style="text-align:center;">LearnNova Education Center</h1>
+    <h3 style="text-align:center;">Subject: Science    Full marks: 40    Time: 30mnts     Class: VIII</h3>
+
+    <div id="timer">
+      <img src="https://img.icons8.com/color/48/000000/stopwatch.png" style="vertical-align: middle; margin-right: 8px;">
+      <span id="timerText">সময় বাকি: 30 মিনিট</span>
+    </div>
+
+    <div id="progressBarContainer">
+      <div id="progressBar"></div>
+    </div>
+
+<form id="quizForm">
+  <!-- Section 1: Questions 1-10 -->
+
+<div id="quizSection1" class="quiz-section active">
+    <span> বিভাগ ১: সঠিক উত্তরটি নির্বাচন করো (MCQ) - (মান: ২০) </span>
+
+    <div class="question">১. ১ গ্রাম বিশুদ্ধ জলের উষ্ণতা ১°C বাড়াতে যে পরিমাণ তাপ লাগে তাকে কী বলে?</div>
+    <div class="options">
+      <label><input type="radio" name="q1" value="a"> (ক) ১ জুল</label>
+      <label><input type="radio" name="q1" value="b"> (খ) ১ ক্যালোরি</label>
+      <label><input type="radio" name="q1" value="c"> (গ) ১ ডিগ্রি</label>
+      <label><input type="radio" name="q1" value="d"> (ঘ) ১ লীনতাপ</label>
+    </div>
+
+    <div class="question">২. বরফ গলনের লীনতাপ কত?</div>
+    <div class="options">
+      <label><input type="radio" name="q2" value="a"> (ক) ৫৩৭ ক্যালোরি/গ্রাম</label>
+      <label><input type="radio" name="q2" value="b"> (খ) ১০০ ক্যালোরি/গ্রাম</label>
+      <label><input type="radio" name="q2" value="c"> (গ) ৮০ ক্যালোরি/গ্রাম</label>
+      <label><input type="radio" name="q2" value="d"> (ঘ) ১ ক্যালোরি/গ্রাম</label>
+    </div>
+
+    <div class="question">৩. কোন পদ্ধতিতে তাপ সঞ্চালনের জন্য কোনো মাধ্যমের প্রয়োজন হয় না?</div>
+    <div class="options">
+      <label><input type="radio" name="q3" value="a"> (ক) পরিবহন</label>
+      <label><input type="radio" name="q3" value="b"> (খ) পরিচালন</label>
+      <label><input type="radio" name="q3" value="c"> (গ) বিকিরণ</label>
+      <label><input type="radio" name="q3" value="d"> (ঘ) কোনোটিই নয়</label>
+    </div>
+
+    <div class="question">৪. জলের আপেক্ষিক তাপের মান কত?</div>
+    <div class="options">
+      <label><input type="radio" name="q4" value="a"> (ক) ০.৫</label>
+      <label><input type="radio" name="q4" value="b"> (খ) ১</label>
+      <label><input type="radio" name="q4" value="c"> (গ) ০.০৯</label>
+      <label><input type="radio" name="q4" value="d"> (ঘ) ৫৩৭</label>
+    </div>
+
+    <div class="question">৫. থার্মোফ্লাস্ক কে উদ্ভাবন করেন?</div>
+    <div class="options">
+      <label><input type="radio" name="q5" value="a"> (ক) নিউটন</label>
+      <label><input type="radio" name="q5" value="b"> (খ) জেমস ডিউয়ার</label>
+      <label><input type="radio" name="q5" value="c"> (গ) গ্যালিলিও</label>
+      <label><input type="radio" name="q5" value="d"> (ঘ) কেলভিন</label>
+    </div>
+
+    <div class="question">৬. প্রমাণ বায়ুমণ্ডলীয় চাপে জলের স্ফুটনাঙ্ক কত?</div>
+    <div class="options">
+      <label><input type="radio" name="q6" value="a"> (ক) ০°C</label>
+      <label><input type="radio" name="q6" value="b"> (খ) ৮০°C</label>
+      <label><input type="radio" name="q6" value="c"> (গ) ১০০°C</label>
+      <label><input type="radio" name="q6" value="d"> (ঘ) ৩৩৭°C</label>
+    </div>
+
+    <div class="question">৭. তাপ গ্রহণের সমীকরণটি হলো:</div>
+    <div class="options">
+      <label><input type="radio" name="q7" value="a"> (ক) Q = mst</label>
+      <label><input type="radio" name="q7" value="b"> (খ) Q = m/st</label>
+      <label><input type="radio" name="q7" value="c"> (গ) Q = m+s+t</label>
+      <label><input type="radio" name="q7" value="d"> (ঘ) Q = ms/t</label>
+    </div>
+
+    <div class="question">৮. হাতে স্পিরিট ঢাললে ঠান্ডা লাগে কেন?</div>
+    <div class="options">
+      <label><input type="radio" name="q8" value="a"> (ক) বিকিরণের জন্য</label>
+      <label><input type="radio" name="q8" value="b"> (খ) বাষ্পায়নের জন্য</label>
+      <label><input type="radio" name="q8" value="c"> (গ) পরিবহনের জন্য</label>
+      <label><input type="radio" name="q8" value="d"> (ঘ) ঘনীভবনের জন্য</label>
+    </div>
+
+    <div class="question">৯. পারদের স্ফুটনাঙ্ক কত?</div>
+    <div class="options">
+      <label><input type="radio" name="q9" value="a"> (ক) ১০০°C</label>
+      <label><input type="radio" name="q9" value="b"> (খ) ৩৫°C</label>
+      <label><input type="radio" name="q9" value="c"> (গ) ৩৫৭°C</label>
+      <label><input type="radio" name="q9" value="d"> (ঘ) -২৫৩°C</label>
+    </div>
+
+    <div class="question">১০. বরফ জলে ভাসে কারণ—</div>
+    <div class="options">
+      <label><input type="radio" name="q10" value="a"> (ক) বরফের ঘনত্ব জলের চেয়ে বেশি</label>
+      <label><input type="radio" name="q10" value="b"> (খ) বরফের ঘনত্ব জলের চেয়ে কম</label>
+      <label><input type="radio" name="q10" value="c"> (গ) দুটির ঘনত্ব সমান</label>
+      <label><input type="radio" name="q10" value="d"> (ঘ) বরফ কঠিন বলে</label>
+    </div>
+
+    <div class="question">১১. কোন পদ্ধতিতে কঠিন পদার্থের মধ্যে দিয়ে তাপ প্রবাহিত হয়?</div>
+    <div class="options">
+      <label><input type="radio" name="q11" value="a"> (ক) বিকিরণ</label>
+      <label><input type="radio" name="q11" value="b"> (খ) পরিচালন</label>
+      <label><input type="radio" name="q11" value="c"> (গ) পরিবহন</label>
+      <label><input type="radio" name="q11" value="d"> (ঘ) বাষ্পায়ন</label>
+    </div>
+
+    <div class="question">১২. জিরো ডিগ্রি উষ্ণতার ১ গ্রাম বরফকে সম উষ্ণতার ১ গ্রাম জলে পরিণত করতে কত তাপ দিতে হবে?</div>
+    <div class="options">
+      <label><input type="radio" name="q12" value="a"> (ক) ৫৩৭ ক্যালোরি</label>
+      <label><input type="radio" name="q12" value="b"> (খ) ৮০ ক্যালোরি</label>
+      <label><input type="radio" name="q12" value="c"> (গ) ১ ক্যালোরি</label>
+      <label><input type="radio" name="q12" value="d"> (ঘ) ০ ক্যালোরি</label>
+    </div>
+
+    <div class="question">১৩. প্রেসার কুকারে জল কত উষ্ণতায় ফোটে?</div>
+    <div class="options">
+      <label><input type="radio" name="q13" value="a"> (ক) ১০০°C</label>
+      <label><input type="radio" name="q13" value="b"> (খ) ১০০°C-এর কম</label>
+      <label><input type="radio" name="q13" value="c"> (গ) ১০০°C-এর বেশি</label>
+      <label><input type="radio" name="q13" value="d"> (ঘ) ০°C</label>
+    </div>
+
+    <div class="question">১৪. মেঘ ও শিশির তৈরির প্রক্রিয়াটিকে কী বলে?</div>
+    <div class="options">
+      <label><input type="radio" name="q14" value="a"> (ক) বাষ্পায়ন</label>
+      <label><input type="radio" name="q14" value="b"> (খ) ঘনীভবন</label>
+      <label><input type="radio" name="q14" value="c"> (গ) গলন</label>
+      <label><input type="radio" name="q14" value="d"> (ঘ) স্ফুটন</label>
+    </div>
+
+    <div class="question">১৫. নিচের কোনটি তাপের সুপরিবাহী?</div>
+    <div class="options">
+      <label><input type="radio" name="q15" value="a"> (ক) কাঠ</label>
+      <label><input type="radio" name="q15" value="b"> (খ) তামা</label>
+      <label><input type="radio" name="q15" value="c"> (গ) প্লাস্টিক</label>
+      <label><input type="radio" name="q15" value="d"> (ঘ) কাচ</label>
+    </div>
+
+    <div class="question">১৬. শীতকালে পালক ফুলিয়ে বসে থাকা পাখির শরীর গরম থাকে কারণ—</div>
+    <div class="options">
+      <label><input type="radio" name="q16" value="a"> (ক) পালক তাপের সুপরিবাহী</label>
+      <label><input type="radio" name="q16" value="b"> (খ) পালকের ফাঁকে আটকে থাকা বায়ু তাপের কুপরিবাহী</label>
+      <label><input type="radio" name="q16" value="c"> (গ) পালক তাপ উৎপন্ন করে</label>
+      <label><input type="radio" name="q16" value="d"> (ঘ) পাখিটি বড় হয়ে যায়</label>
+    </div>
+
+    <div class="question">১৭. জলের বাষ্পায়নের লীনতাপ কত?</div>
+    <div class="options">
+      <label><input type="radio" name="q17" value="a"> (ক) ৮০ ক্যালোরি/গ্রাম</label>
+      <label><input type="radio" name="q17" value="b"> (খ) ৫৩৭ ক্যালোরি/গ্রাম</label>
+      <label><input type="radio" name="q17" value="c"> (গ) ১ ক্যালোরি/গ্রাম</label>
+      <label><input type="radio" name="q17" value="d"> (ঘ) ১০০ ক্যালোরি/গ্রাম</label>
+    </div>
+
+    <div class="question">১৮. হিমমিশ্র তৈরিতে বরফ ও নুনের অনুপাত কত থাকে?</div>
+    <div class="options">
+      <label><input type="radio" name="q18" value="a"> (ক) ১:১</label>
+      <label><input type="radio" name="q18" value="b"> (খ) ৩:১</label>
+      <label><input type="radio" name="q18" value="c"> (গ) ১:৩</label>
+      <label><input type="radio" name="q18" value="d"> (ঘ) ২:১</label>
+    </div>
+
+    <div class="question">১৯. যে তাপ উষ্ণতার পরিবর্তন না ঘটিয়ে শুধুমাত্র অবস্থার পরিবর্তন ঘটায় তাকে কী বলে?</div>
+    <div class="options">
+      <label><input type="radio" name="q19" value="a"> (ক) আপেক্ষিক তাপ</label>
+      <label><input type="radio" name="q19" value="b"> (খ) লীনতাপ</label>
+      <label><input type="radio" name="q19" value="c"> (গ) বিকীর্ণ তাপ</label>
+      <label><input type="radio" name="q19" value="d"> (ঘ) মোট তাপ</label>
+    </div>
+
+    <div class="question">২০. থার্মোফ্লাস্কের দেয়ালে কিসের প্রলেপ দেওয়া থাকে?</div>
+    <div class="options">
+      <label><input type="radio" name="q20" value="a"> (ক) তামা</label>
+      <label><input type="radio" name="q20" value="b"> (খ) রুপো</label>
+      <label><input type="radio" name="q20" value="c"> (গ) সোনা</label>
+      <label><input type="radio" name="q20" value="d"> (ঘ) দস্তা</label>
+    </div>
+  
+  <button type="button" class="next-btn" onclick="showNextSection('quizSection2')">পরবর্তী</button>
+</div>
+
+  <!-- Section 2: Questions 11-20 -->
+<div id="quizSection2" class="quiz-section">
+    <span> বিভাগ ২: শূন্যস্থান পূরণ করো (সঠিক বিকল্পটি বেছে নাও) - (মান: ১০) </span>
+
+    <div class="question">২১. তরল থেকে কঠিনে পরিণত হওয়ার সময় পদার্থ আয়তনে কমলে তার ঘনত্ব __________।</div>
+    <div class="options">
+      <label><input type="radio" name="q21" value="a"> (ক) কমে</label>
+      <label><input type="radio" name="q21" value="b"> (খ) বাড়ে</label>
+      <label><input type="radio" name="q21" value="c"> (গ) একই থাকে</label>
+    </div>
+
+    <div class="question">২২. বাষ্পায়ন একটি __________ প্রক্রিয়া।</div>
+    <div class="options">
+      <label><input type="radio" name="q22" value="a"> (ক) দ্রুত</label>
+      <label><input type="radio" name="q22" value="b"> (খ) ধীর</label>
+      <label><input type="radio" name="q22" value="c"> (গ) তাৎক্ষণিক</label>
+    </div>
+
+    <div class="question">২৩. বায়ু তাপের একটি __________ পদার্থ।</div>
+    <div class="options">
+      <label><input type="radio" name="q23" value="a"> (ক) সুপরিবাহী</label>
+      <label><input type="radio" name="q23" value="b"> (খ) কুপরিবাহী</label>
+      <label><input type="radio" name="q23" value="c"> (গ) অতিপরিবাহী</label>
+    </div>
+
+    <div class="question">২৪. তরলে নুন মেশালে তার স্ফুটনাঙ্ক __________।</div>
+    <div class="options">
+      <label><input type="radio" name="q24" value="a"> (ক) কমে</label>
+      <label><input type="radio" name="q24" value="b"> (খ) বাড়ে</label>
+      <label><input type="radio" name="q24" value="c"> (গ) একই থাকে</label>
+    </div>
+
+    <div class="question">২৫. কোনো পদার্থের একক ভরের উষ্ণতা ১° বৃদ্ধি করতে প্রয়োজনীয় তাপকে ওই পদার্থের __________ বলে।</div>
+    <div class="options">
+      <label><input type="radio" name="q25" value="a"> (ক) লীনতাপ</label>
+      <label><input type="radio" name="q25" value="b"> (খ) আপেক্ষিক তাপ</label>
+      <label><input type="radio" name="q25" value="c"> (গ) পরিবহন</label>
+    </div>
+
+    <div class="question">২৬. পাহাড়ের ফাটলে জল জমে বরফ হলে আয়তন __________।</div>
+    <div class="options">
+      <label><input type="radio" name="q26" value="a"> (ক) কমে</label>
+      <label><input type="radio" name="q26" value="b"> (খ) বাড়ে</label>
+      <label><input type="radio" name="q26" value="c"> (গ) সংকুচিত হয়</label>
+    </div>
+
+    <div class="question">২৭. তাপ সঞ্চালনের __________ পদ্ধতিতে মাধ্যমের কণাগুলি নিজেরাই তাপ বহন করে নিয়ে যায়।</div>
+    <div class="options">
+      <label><input type="radio" name="q27" value="a"> (ক) পরিবহন</label>
+      <label><input type="radio" name="q27" value="b"> (খ) পরিচালন</label>
+      <label><input type="radio" name="q27" value="c"> (গ) বিকিরণ</label>
+    </div>
+
+    <div class="question">২৮. বরফের ওপর চাপ বাড়ালে তার গলনাঙ্ক __________।</div>
+    <div class="options">
+      <label><input type="radio" name="q28" value="a"> (ক) কমে</label>
+      <label><input type="radio" name="q28" value="b"> (খ) বাড়ে</label>
+      <label><input type="radio" name="q28" value="c"> (গ) অপরিবর্তিত থাকে</label>
+    </div>
+
+    <div class="question">২৯. সূর্য থেকে পৃথিবীতে তাপ __________ পদ্ধতিতে আসে।</div>
+    <div class="options">
+      <label><input type="radio" name="q29" value="a"> (ক) পরিবহন</label>
+      <label><input type="radio" name="q29" value="b"> (খ) পরিচালন</label>
+      <label><input type="radio" name="q29" value="c"> (গ) বিকিরণ</label>
+    </div>
+
+    <div class="question">৩০. শিশির সাধারণত __________ দেখা যায়।</div>
+    <div class="options">
+      <label><input type="radio" name="q30" value="a"> (ক) দুপুরে</label>
+      <label><input type="radio" name="q30" value="b"> (খ) ভোরে</label>
+      <label><input type="radio" name="q30" value="c"> (গ) সন্ধ্যায়</label>
+    </div>
+  
+  
+  <button type="button" class="next-btn" onclick="showNextSection('quizSection1')">পূর্ববর্তী</button>
+  <button type="button" class="next-btn" onclick="showNextSection('quizSection3')">পরবর্তী</button>
+</div>
+
+  <!-- Section 3: Questions 21-30 -->
+<div id="quizSection3" class="quiz-section">
+    <span> বিভাগ ৩: সত্য অথবা মিথ্যা লেখো - (মান: ১০) </span>
+
+    <div class="question">৩১. সব পদার্থের আপেক্ষিক তাপ সমান হয়।</div>
+    <div class="options">
+      <label><input type="radio" name="q31" value="true"> সত্য</label>
+      <label><input type="radio" name="q31" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৩২. জলের ঘনত্ব বরফের ঘনত্বের চেয়ে বেশি।</div>
+    <div class="options">
+      <label><input type="radio" name="q32" value="true"> সত্য</label>
+      <label><input type="radio" name="q32" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৩৩. পরিবহন পদ্ধতিতে তাপ সঞ্চালনের জন্য জড় মাধ্যমের প্রয়োজন হয় না।</div>
+    <div class="options">
+      <label><input type="radio" name="q33" value="true"> সত্য</label>
+      <label><input type="radio" name="q33" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৩৪. শীতকালে রঙিন বা কালো পোশাক বেশি আরামদায়ক।</div>
+    <div class="options">
+      <label><input type="radio" name="q34" value="true"> সত্য</label>
+      <label><input type="radio" name="q34" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৩৫. থার্মোফ্লাস্কের দুই দেয়ালের মাঝখানে শূন্যস্থান থাকে।</div>
+    <div class="options">
+      <label><input type="radio" name="q35" value="true"> সত্য</label>
+      <label><input type="radio" name="q35" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৩৬. বাষ্পায়ন কেবল একটি নির্দিষ্ট উষ্ণতাতেই ঘটে।</div>
+    <div class="options">
+      <label><input type="radio" name="q36" value="true"> সত্য</label>
+      <label><input type="radio" name="q36" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৩৭. গলন বা কঠিনভবনের সময় পদার্থের উষ্ণতা স্থির থাকে।</div>
+    <div class="options">
+      <label><input type="radio" name="q37" value="true"> সত্য</label>
+      <label><input type="radio" name="q37" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৩৮. তামা অ্যালুমিনিয়ামের চেয়ে তাপের ভালো কুপরিবাহী।</div>
+    <div class="options">
+      <label><input type="radio" name="q38" value="true"> সত্য</label>
+      <label><input type="radio" name="q38" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৩৯. ফিউজ তারের গলনাঙ্ক খুব বেশি হওয়া প্রয়োজন।</div>
+    <div class="options">
+      <label><input type="radio" name="q39" value="true"> সত্য</label>
+      <label><input type="radio" name="q39" value="false"> মিথ্যা</label>
+    </div>
+
+    <div class="question">৪০. লীনতাপ থার্মোমিটারে ধরা পড়ে না।</div>
+    <div class="options">
+      <label><input type="radio" name="q40" value="true"> সত্য</label>
+      <label><input type="radio" name="q40" value="false"> মিথ্যা</label>
+    </div>
+  
+
+  <button type="button" class="next-btn" onclick="showNextSection('quizSection2')">পূর্ববর্তী</button>
+  <button type="submit" class="submit-btn">জমা দিন</button>
+</div>
+
+</form>
+</div>
+
+  <div id="thankYou">
+    <h2>ধন্যবাদ!</h2>
+    <p>কুইজটি সফলভাবে সম্পন্ন করার জন্য আপনাকে অভিনন্দন, <span id="finalStudentName"></span>!</p>
+    <p>আপনার কুইজের ফলাফল নিচে দেওয়া হলো:</p>
+    <p class="score-display">আপনার স্কোর: <span id="finalScoreDisplay"></span></p>
+  </div>
+
+  <script>
+    let studentName = "";
+    let studentEmail = "";
+    let currentQuizSection = 'quizSection1'; 
+    var subject = document.getElementById("subject").innerText;
+    var exam_code = document.getElementById("exam_code").innerText;
+    
+    // সঠিক উত্তরের অবজেক্ট
+    const quizAnswers = {
+    q1: "b", q2: "c", q3: "c", q4: "b", q5: "b",
+    q6: "c", q7: "a", q8: "b", q9: "c", q10: "b",
+    q11: "c", q12: "b", q13: "c", q14: "b", q15: "b",
+    q16: "b", q17: "b", q18: "b", q19: "b", q20: "b",
+    q21: "b", q22: "b", q23: "b", q24: "b", q25: "b",
+    q26: "b", q27: "b", q28: "a", q29: "c", q30: "b",
+    q31: "false", q32: "true", q33: "false", q34: "true", q35: "true",
+    q36: "false", q37: "true", q38: "false", q39: "false", q40: "true"
+  };
+
+    function checkLogin(event) {
+      event.preventDefault();
+      studentName = document.getElementById("studentName").value.trim();
+      studentEmail = document.getElementById("studentEmail").value.trim();
+      const errorDiv = document.getElementById("error-message");
+
+      if (!studentName || !studentEmail) {
+        errorDiv.textContent = "অনুগ্রহ করে আপনার নাম এবং ইমেইল প্রদান করুন।";
+        return;
+      }
+
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("quizArea").style.display = "block";
+      document.getElementById(currentQuizSection).classList.add('active');
+      startTimer();
+    }
+
+    let timeLeft = 30 * 60; 
+    let countdown;
+    const form = document.getElementById("quizForm");
+    const progressBar = document.getElementById("progressBar");
+
+    function startTimer() {
+      countdown = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timerText").textContent = `সময় বাকি: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} মিনিট`;
+        progressBar.style.width = (timeLeft / (30 * 60) * 100) + "%";
+
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          form.requestSubmit();
+        }
+      }, 1000);
+    }
+
+    function showNextSection(nextSectionId) {
+        document.getElementById(currentQuizSection).classList.remove('active');
+        const nextSectionElement = document.getElementById(nextSectionId);
+        nextSectionElement.classList.add('active');
+        currentQuizSection = nextSectionId;
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      clearInterval(countdown);
+
+      let totalScore = 0;
+      let totalQuestions = 0;
+      let userResponses = {};
+
+      for (let q in quizAnswers) {
+        const selected = form[q] ? form[q].value : "Not Answered";
+        userResponses[q] = selected;
+        if (selected === quizAnswers[q]) {
+            totalScore++;
+        }
+        totalQuestions++;
+      }
+
+      // ইউজার রেসপন্স গ্লোবাল করা হলো ডাউনলোডের জন্য
+      window.currentUserResponses = userResponses;
+
+      document.getElementById('finalStudentName').textContent = studentName;
+      document.getElementById('finalScoreDisplay').textContent = `${totalScore} / ${totalQuestions}`;
+
+      fetch("http://localhost/3ducation1/assets/php/submit_quiz.php", {
+        method: "POST",
+        body: JSON.stringify({
+          name: studentName,
+          email: studentEmail,
+          score: totalScore,
+          total: totalQuestions,
+          subject: subject,
+          exam_code: exam_code
+        }),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      document.getElementById("quizArea").style.display = "none";
+      document.getElementById("thankYou").style.display = "block";
+      // নতুন লাইন: রেজাল্ট দেখানোর সাথে সাথে স্বয়ংক্রিয়ভাবে পিডিএফ ডাউনলোড শুরু হবে
+      downloadAnswerScript();
+    });
+
+    // ডাইনামিক আনসার স্ক্রিপ্ট ডাউনলোড ফাংশন
+    function downloadAnswerScript() {
+        const questions = [];
+      // আপনার এইচটিএমএল থেকে সাবজেক্ট এবং এক্সাম কোড নেওয়া
+    const currentSubject = document.getElementById("subject").innerText;
+    const currentExamCode = document.getElementById("exam_code").innerText;
+      
+        document.querySelectorAll('.question').forEach((qEl, index) => {
+            const qKey = "q" + (index + 1);
+            const questionText = qEl.innerText;
+            const options = {};
+            const optionsDiv = qEl.nextElementSibling;
+            
+            if (optionsDiv && optionsDiv.classList.contains('options')) {
+                optionsDiv.querySelectorAll('label').forEach(label => {
+                    const radio = label.querySelector('input');
+                    if(radio){
+                        options[radio.value] = label.innerText;
+                    }
+                });
+            }
+
+            questions.push({
+                key: qKey,
+                question: questionText,
+                options: options,
+                userAnswer: window.currentUserResponses[qKey],
+                correctAnswer: quizAnswers[qKey]
+            });
+        });
+
+        const formExport = document.createElement('form');
+        formExport.method = 'POST';
+        formExport.action = 'http://localhost/3ducation1/assets/php/generate_answer_script.php';
+        //formExport.target = '_blank';
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'full_data';
+        input.value = JSON.stringify(questions);
+        formExport.appendChild(input);
+        
+            // ২. সাবজেক্ট পাঠানো
+        const inputSubject = document.createElement('input');
+        inputSubject.type = 'hidden';
+        inputSubject.name = 'subject';
+        inputSubject.value = currentSubject;
+        formExport.appendChild(inputSubject);
+    
+        // ৩. এক্সাম কোড পাঠানো
+        const inputCode = document.createElement('input');
+        inputCode.type = 'hidden';
+        inputCode.name = 'exam_code';
+        inputCode.value = currentExamCode;
+        formExport.appendChild(inputCode);
+      
+        document.body.appendChild(formExport);
+        formExport.submit();
+        document.body.removeChild(formExport);
+    }
+
+    // ইমেইল ভেরিফিকেশন লজিক
+    const urlParams = new URLSearchParams(window.location.search);
+    const validEmail = urlParams.get('email');
+
+    document.getElementById("checkEmailBtn").addEventListener("click", function () {
+      const emailInput = document.getElementById("studentEmail").value.trim();
+      if (emailInput === validEmail) {
+        document.getElementById("checkEmailBtn").style.display = "none";
+        document.getElementById("goQuiz").style.display = "inline-block";
+      } else {
+        const message = document.getElementById("message");
+        message.style.display = "block";
+        message.textContent = "Oops! That email doesn't match our records.";
+      }
+    });
+
+    window.history.replaceState({}, document.title, window.location.pathname);
+  </script>
+</body>
+</html>
